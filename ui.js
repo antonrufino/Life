@@ -26,25 +26,14 @@ function setUpCanvas() {
 	}
 }
 
-function setGUI() {
-	var gui = new dat.GUI();
-	gui.add(appUI, 'cellSize');
-	
-	canvas.addEventListener('mousemove', mouseMoveHandler);
-}
-
 function UI() {
 	this.cellSize = 20;
 	this.background = '#2a2a2a';
-	this.cellMouseOverColor = '2e2e2e'
-	this.cellColor
+	this.cellColor = '#2222ee';
 }
 
 UI.prototype.init = function() {
 	setUpCanvas();
-	
-	ctx.fillStyle = this.background;
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 UI.prototype.fillCell = function (mouseX, mouseY, color) {
@@ -53,4 +42,9 @@ UI.prototype.fillCell = function (mouseX, mouseY, color) {
 	
 	ctx.fillStyle = color;
 	ctx.fillRect(cellX, cellY, this.cellSize, this.cellSize);
+	
+	return {
+		x: cellX,
+		y: cellY
+	}
 }
