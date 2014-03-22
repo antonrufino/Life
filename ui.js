@@ -14,23 +14,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-var appUI;
 var canvas, ctx;
 
-function ui() {
-	this.cellSize = 10;
-}
-
-ui.prototype.init = function() {
-	setUpCanvas();
-	
-	ctx.fillStyle = '#000';
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
-
 function setUpCanvas() {
-	console.log('hello');
 	canvas = document.getElementById('field');
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
@@ -43,10 +29,28 @@ function setUpCanvas() {
 function setGUI() {
 	var gui = new dat.GUI();
 	gui.add(appUI, 'cellSize');
+	
+	canvas.addEventListener('mousemove', mouseMoveHandler);
 }
 
-window.addEventListener('load', function () {
-	appUI = new ui();
-	appUI.init();
-	setGUI();
-}, false);
+function UI() {
+	this.cellSize = 20;
+	this.background = '#2a2a2a';
+	this.cellMouseOverColor = '2e2e2e'
+	this.cellColor
+}
+
+UI.prototype.init = function() {
+	setUpCanvas();
+	
+	ctx.fillStyle = this.background;
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+UI.prototype.fillCell = function (mouseX, mouseY, color) {
+	var cellX = Math.floor(mouseX / this.cellSize) * this.cellSize; 
+	var cellY = Math.floor(mouseY / this.cellSize) * this.cellSize;
+	
+	ctx.fillStyle = color;
+	ctx.fillRect(cellX, cellY, this.cellSize, this.cellSize);
+}
