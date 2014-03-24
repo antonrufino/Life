@@ -29,7 +29,8 @@ function setUpCanvas() {
 function UI() {
 	this.cellSize = 10;
 	this.background = '#2a2a2a';
-	this.cellColor = '#2222ee';
+	this.cellColor = '#00eeee';
+	this.cellBorder = '#dddddd';
 }
 
 UI.prototype.init = function() {
@@ -40,8 +41,11 @@ UI.prototype.fillCell = function (mouseX, mouseY, color) {
 	var cellX = Math.floor(mouseX / this.cellSize) * this.cellSize; 
 	var cellY = Math.floor(mouseY / this.cellSize) * this.cellSize;
 	
+	ctx.strokeStyle = this.cellBorder;
 	ctx.fillStyle = color;
-	ctx.fillRect(cellX, cellY, this.cellSize, this.cellSize);
+	
+	//ctx.strokeRect(cellX, cellY, this.cellSize, this.cellSize);
+	ctx.fillRect(cellX + 1, cellY + 1, this.cellSize - 2, this.cellSize - 2);
 	
 	return {
 		row: cellY / this.cellSize,

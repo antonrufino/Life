@@ -1,7 +1,27 @@
+/*
+    Copyright (C) 2014  Anton Rufino
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 var Life;
 
 function App() {
-	this.pause = false;
+	this.paused = true;
+	this.start = start;
+	this.stop = stop;
+	this.run = run;
 
 	this.UI = new UI();
 	this.GOL = new GOL();
@@ -14,19 +34,34 @@ App.prototype.init = function() {
 	this.GOL.init(Math.floor(canvas.height / this.UI.cellSize), Math.floor(canvas.width / this.UI.cellSize));
 	this.run();
 	
+	ctx.fillStyle = this.UI.background;
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	
 	setGUI();
 	
 	canvas.addEventListener('mousedown', mouseDownHandler, false);
 	canvas.addEventListener('mouseup', mouseUpHandler, false);
 	canvas.addEventListener('mousemove', mouseMoveHandler, false);
-	canvas.addEventListener('click', clickHandler, false);
+	canvas.addEventListener('click', mouseMoveHandler, false);
 }
 
-App.prototype.run = function() {	
-	ctx.fillStyle = this.UI.background;
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
+function run() {	
+	//ctx.fillStyle = this.UI.background;
+	//ctx.fillRect(0, 0, canvas.width, canvas.height);
 	
-	//window.requestAnimFrame(App.prototype.run)
+	if (!Life.paused) {
+		console.log('tick');
+		window.requestAnimFrame(run);
+	}
+}
+
+function start() {
+	this.paused = false;
+	this.run();
+}
+
+function stop() {
+	this.paused = true;
 }
 
 function mouseDownHandler(e) {
@@ -38,20 +73,16 @@ function mouseUpHandler(e) {
 }
 
 function mouseMoveHandler(e) {
-	if (Life.mouseDown) {
+	if (Life.mouseDown && Life.paused) {
 		var cellPosition = Life.UI.fillCell(e.clientX, e.clientY, Life.UI.cellColor);
 		Life.GOL.changeCell(Life.GOL.currentGeneration, cellPosition)
 	}
 }
 
-function clickHandler(e) {
-	var cellPosition = Life.UI.fillCell(e.clientX, e.clientY, Life.UI.cellColor);
-	Life.GOL.changeCell(Life.GOL.currentGeneration, cellPosition)
-}
-
 function setGUI() {
 	var gui = new dat.GUI();
-	gui.add(Life.UI, 'cellSize');
+	gui.add(Life, 'start');
+	gui.add(Life, 'stop');
 }
 
 window.addEventListener('load', function () {
