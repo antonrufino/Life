@@ -4,12 +4,14 @@ function App() {
 	this.pause = false;
 
 	this.UI = new UI();
+	this.GOL = new GOL();
 	
 	this.mouseDown = false;
 }
 
 App.prototype.init = function() {
-	this.UI.init()
+	this.UI.init();
+	this.GOL.init(Math.floor(canvas.height / this.UI.cellSize), Math.floor(canvas.width / this.UI.cellSize));
 	this.run();
 	
 	setGUI();
@@ -17,6 +19,7 @@ App.prototype.init = function() {
 	canvas.addEventListener('mousedown', mouseDownHandler, false);
 	canvas.addEventListener('mouseup', mouseUpHandler, false);
 	canvas.addEventListener('mousemove', mouseMoveHandler, false);
+	canvas.addEventListener('click', clickHandler, false);
 }
 
 App.prototype.run = function() {	
@@ -36,8 +39,14 @@ function mouseUpHandler(e) {
 
 function mouseMoveHandler(e) {
 	if (Life.mouseDown) {
-		Life.UI.fillCell(e.clientX, e.clientY, Life.UI.cellColor);
+		var cellPosition = Life.UI.fillCell(e.clientX, e.clientY, Life.UI.cellColor);
+		Life.GOL.changeCell(Life.GOL.currentGeneration, cellPosition)
 	}
+}
+
+function clickHandler(e) {
+	var cellPosition = Life.UI.fillCell(e.clientX, e.clientY, Life.UI.cellColor);
+	Life.GOL.changeCell(Life.GOL.currentGeneration, cellPosition)
 }
 
 function setGUI() {

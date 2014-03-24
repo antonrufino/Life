@@ -27,7 +27,7 @@ function setUpCanvas() {
 }
 
 function UI() {
-	this.cellSize = 20;
+	this.cellSize = 10;
 	this.background = '#2a2a2a';
 	this.cellColor = '#2222ee';
 }
@@ -44,7 +44,7 @@ UI.prototype.fillCell = function (mouseX, mouseY, color) {
 	ctx.fillRect(cellX, cellY, this.cellSize, this.cellSize);
 	
 	return {
-		x: cellX,
-		y: cellY
-	}
+		row: cellY / this.cellSize,
+		col: cellX / this.cellSize
+	};
 }
