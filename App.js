@@ -22,6 +22,7 @@ function App() {
 	this.start = start;
 	this.stop = stop;
 	this.run = run;
+	this.reset = reset;
 
 	this.UI = new UI();
 	this.GOL = new GOL();
@@ -31,23 +32,26 @@ function App() {
 
 App.prototype.init = function() {
 	this.UI.init();
-	this.GOL.init(Math.floor(canvas.height / this.UI.cellSize), Math.floor(canvas.width / this.UI.cellSize));
-	this.run();
+	this.GOL.init();
 	
-	ctx.fillStyle = this.UI.background;
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	this.UI.drawFrame(this.GOL);
 	
 	setGUI();
 	
 	canvas.addEventListener('mousedown', mouseDownHandler, false);
 	canvas.addEventListener('mouseup', mouseUpHandler, false);
 	canvas.addEventListener('mousemove', mouseMoveHandler, false);
-	canvas.addEventListener('click', mouseMoveHandler, false);
+	canvas.addEventListener('click', clickHandler, false);
 }
 
-function run() {	
-	//ctx.fillStyle = this.UI.background;
-	//ctx.fillRect(0, 0, canvas.width, canvas.height);
+function run() {
+	Life.GOL.getNextGeneration();
+	Life.UI.drawFrame(Life.GOL);
+
+	Life.GOL.getPopulation();
+	if (Life.GOL.population == 0) {
+		Life.paused = true;
+	}
 	
 	if (!Life.paused) {
 		console.log('tick');
@@ -64,8 +68,24 @@ function stop() {
 	this.paused = true;
 }
 
+function reset() {
+	this.paused = true;
+	this.GOL.init();
+	this.GOL.population = 0;
+	this.UI.drawFrame(Life.GOL);
+}
+
 function mouseDownHandler(e) {
 	Life.mouseDown = true;
+	
+	var position = (function () {
+		return {
+			row: Math.floor(e.clientY / Life.UI.cellSize),
+			col: Math.floor(e.clientX / Life.UI.cellSize)
+		};
+	})();
+	
+	Life.UI.cellState = !Life.GOL.currentGeneration[position.row][position.col];
 }
 
 function mouseUpHandler(e) {
@@ -73,16 +93,25 @@ function mouseUpHandler(e) {
 }
 
 function mouseMoveHandler(e) {
-	if (Life.mouseDown && Life.paused) {
-		var cellPosition = Life.UI.fillCell(e.clientX, e.clientY, Life.UI.cellColor);
-		Life.GOL.changeCell(Life.GOL.currentGeneration, cellPosition)
+	if (Life.mouseDown) {
+		var position = Life.UI.fillCell(e.clientX, e.clientY, Life.GOL);
+		Life.GOL.currentGeneration[position.row][position.col] = Life.UI.cellState;
+		Life.GOL.getPopulation()
 	}
+}
+
+function clickHandler(e) {
+	var position = Life.UI.fillCell(e.clientX, e.clientY, Life.GOL);
+	Life.GOL.currentGeneration[position.row][position.col] = Life.UI.cellState;
+	Life.GOL.getPopulation()
 }
 
 function setGUI() {
 	var gui = new dat.GUI();
+	gui.add(Life.GOL, 'population').listen();
 	gui.add(Life, 'start');
 	gui.add(Life, 'stop');
+	gui.add(Life, 'reset');
 }
 
 window.addEventListener('load', function () {

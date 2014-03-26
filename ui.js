@@ -16,7 +16,15 @@
 */
 var canvas, ctx;
 
-function setUpCanvas() {
+function UI() {
+	this.cellSize = 10;
+	this.background = '#000';
+	this.emptyCell = '#2a2a2a';
+	this.cellColor = '#00eeee';
+	this.cellState = false;
+}
+
+UI.prototype.init = function() {
 	canvas = document.getElementById('field');
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
@@ -26,29 +34,32 @@ function setUpCanvas() {
 	}
 }
 
-function UI() {
-	this.cellSize = 10;
-	this.background = '#2a2a2a';
-	this.cellColor = '#00eeee';
-	this.cellBorder = '#dddddd';
-}
-
-UI.prototype.init = function() {
-	setUpCanvas();
-}
-
-UI.prototype.fillCell = function (mouseX, mouseY, color) {
-	var cellX = Math.floor(mouseX / this.cellSize) * this.cellSize; 
-	var cellY = Math.floor(mouseY / this.cellSize) * this.cellSize;
+UI.prototype.fillCell = function (mouseX, mouseY, golObject) {
+	var cellX = Math.floor(mouseX / this.cellSize); 
+	var cellY = Math.floor(mouseY / this.cellSize);
 	
-	ctx.strokeStyle = this.cellBorder;
-	ctx.fillStyle = color;
-	
-	//ctx.strokeRect(cellX, cellY, this.cellSize, this.cellSize);
-	ctx.fillRect(cellX + 1, cellY + 1, this.cellSize - 2, this.cellSize - 2);
+	ctx.fillStyle = this.cellState ? this.cellColor : this.emptyCell;
+	ctx.fillRect(cellX * this.cellSize + 1, cellY * this.cellSize + 1, this.cellSize - 2, this.cellSize - 2);
 	
 	return {
-		row: cellY / this.cellSize,
-		col: cellX / this.cellSize
+		row: cellY,
+		col: cellX
 	};
+}
+
+UI.prototype.drawFrame = function (golObject) {
+	ctx.fillStyle = this.background;
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	
+	for (var i = 0; i < golObject.currentGeneration.length; ++i) {
+		for (var j = 0; j < golObject.currentGeneration[i].length; ++j) {
+			if (golObject.currentGeneration[i][j]) {
+				ctx.fillStyle = this.cellColor;
+			} else {
+				ctx.fillStyle = this.emptyCell;
+			}
+			
+			ctx.fillRect(j * this.cellSize + 1, i * this.cellSize + 1, this.cellSize - 2, this.cellSize - 2);
+		}
+	}
 }
