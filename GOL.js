@@ -7,8 +7,8 @@ function GOL() {
 }
 
 GOL.prototype.init = function () {
-	this.numRows = Math.floor((canvas.height - 1) / Life.UI.cellSize);
-	this.numCols = Math.floor((canvas.width - 1) / Life.UI.cellSize);
+	this.numRows = Math.ceil((canvas.height - 1) / Life.UI.cellSize);
+	this.numCols = Math.ceil((canvas.width - 1) / Life.UI.cellSize);
 	
 	for(var i = 0; i < this.numRows; ++i) {
 		this.currentGeneration[i] = [];
@@ -46,23 +46,35 @@ GOL.prototype.getNumberOfNeighbors = function (row, col) {
 GOL.prototype.getNextGeneration = function () {
 	var i, j;
 	
-	this.nextGeneration = this.currentGeneration;
+	this.nextGeneration = []
 	for (i = 0; i < this.numRows; ++i) {
-		for (j = 0; j < this.numCols; ++j) {
+	    this.nextGeneration.push([]);
+	    for (j = 0; j < this.numCols; ++j) {
+	        this.nextGeneration[i].push(this.currentGeneration[i][j]);
+	    }
+	}
+	
+	for (i = 0; i < this.numRows; ++i) {
+	   	for (j = 0; j < this.numCols; ++j) {
 			var count = this.getNumberOfNeighbors(i, j);
 			
 			if (this.currentGeneration[i][j]) {
 				if (count < 2 || count > 3) {
-					console.log('Bye ('+ i + ',' + j + ')');
 					this.nextGeneration[i][j] = false;
 				}
 			} else if (count == 3) {
 				this.nextGeneration[i][j] = true;
-				console.log('Hello ('+ i + ',' + j + ')');
 			}
 		}
 	}
-	this.currentGeneration = this.nextGeneration;
+	
+	this.currentGeneration = []
+	for (i = 0; i < this.numRows; ++i) {
+	    this.currentGeneration.push([]);
+	    for (j = 0; j < this.numCols; ++j) {
+	        this.currentGeneration[i].push(this.nextGeneration[i][j]);
+	    }
+	}
 }	
 
 GOL.prototype.getPopulation = function () {

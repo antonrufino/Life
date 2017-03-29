@@ -54,7 +54,6 @@ function run() {
 	}
 	
 	if (!Life.paused) {
-		console.log('tick');
 		window.requestAnimFrame(run);
 	}
 }
